@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Google Earth Search</title>
+
+</head>
+<body>
+  <h1>Google Earth Search</h1>
+  <p>jQuery plugin that enables Google Earth geo-coded searches.</p>
+
+  <div id="gePlugin" style="width:600px; height:450px;"></div>
+
+  <script>
+    // Discover and use the appropriate jsapi key
+    switch(window.location.host){
+      case "localhost":
+        var jsapiKey = "ABQIAAAA6_3K-gCiIwLdvd1uci68ABQnZhpGFBlSBp4V-vX1TF0eV4YGpBR_9WBqiFC7qI99udoIXLs1r_cU4w";
+        break;
+    }
+    document.write(unescape('%3Cscript src="//www.google.com/jsapi?key='+ jsapiKey +'"%3E%3C/script%3E'));
+  </script>
+  <script>
+    // Google Earth API
+    google.load("earth", "1");
+    // Google Maps API (necessary for geo-coding)
+    google.load("maps", "3", {other_params:"sensor=true"});
+    // Google Jquery CDN
+    google.load("jquery", "1.5.0");
+
+    google.setOnLoadCallback(initGe);
+
+    // Initialize Google Earth
+    function initGe() {
+      google.earth.createInstance('gePlugin', onGeInit);
+    }
+
+    // Google Earth init callback
+    function onGeInit(instance) {
+      window.ge = instance;
+
+      ge.getWindow().setVisibility(true);
+      ge.getNavigationControl().setVisibility(ge.VISIBILITY_AUTO);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, true);
+    }
+  </script>
+  <script src="jquery.gesearch.js"></script>
+</body>
+</html>
