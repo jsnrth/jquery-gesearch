@@ -30,38 +30,21 @@
     // Google Jquery CDN
     google.load("jquery", "1.5.0");
 
-    google.setOnLoadCallback(initGe);
+    google.setOnLoadCallback(function() {
+      google.earth.createInstance('gePlugin', onInitSuccess);
+    });
 
-    // Initialize Google Earth
-    function initGe() {
-      google.earth.createInstance('gePlugin', onGeInit);
-    }
-
-    // Google Earth init callback
-    function onGeInit(instance) {
+    function onInitSuccess(instance) {
       window.ge = instance;
-
       ge.getWindow().setVisibility(true);
       ge.getNavigationControl().setVisibility(ge.VISIBILITY_AUTO);
       ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, true);
       ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, true);
+
+      $(".ge-search").geSearch(ge);
     }
+
   </script>
   <script src="jquery.gesearch.js"></script>
-
-  <script>
-    function searchMap(){
-      var query = $(".ge-search[type=search]").val();
-      new GeSearch(query);
-    }
-
-    $(".ge-search[type=button]").click(searchMap);
-    $(".ge-search[type=search]").keypress(function(e){
-      if(e.keyCode == 13) {
-        searchMap();
-        return false;
-      }
-    });
-  </script>
 </body>
 </html>

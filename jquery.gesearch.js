@@ -16,7 +16,7 @@
 
     // Initialize options
     var defaults = {
-      query: "",
+      query: (typeof GeSearch.getQuery == "function") ? GeSearch.getQuery() : "",
       queryType: "address",
       // Immediately perform a search if the query parameter is given, set to
       // false to disable initial search
@@ -46,21 +46,14 @@
       return o;
     }
 
-    // Flash a message to notify users that the geo search produced zero results
-    this.notifyNoResults = function(){
-      var flash = $("<span class='no-results'>Nothing found</span>");
-      $("body").prepend(flash);
-      flash.delay(3000).fadeOut();
-    }
-
     // Event handler for geocode request
     this.onGeoResults = function(results, status){
       switch(status) {
         case google.maps.GeocoderStatus.OK:
-          window.GeSearch.gotoResult(results[0]);
+          GeSearch.gotoResult(results[0]);
           break;
         case google.maps.GeocoderStatus.ZERO_RESULTS:
-          window.GeSearch.notifyNoResults();
+          GeSearch.notifyNoResults();
         break;
       }
     }
@@ -93,6 +86,13 @@
     camera.setTilt(0.0);
 
     window.ge.getView().setAbstractView(camera);
+  }
+
+  // Flash a message to notify users that the geo search produced zero results
+  GeSearch.notifyNoResults = function(){
+    var flash = $("<span class='no-results'>Nothing found</span>");
+    $("body").prepend(flash);
+    flash.delay(3000).fadeOut();
   }
 
   // Takes a google.maps.LatLngBounds object
@@ -137,6 +137,39 @@
     }
 
     return alt;
+  }
+
+  // Function to get the query string for a search
+  GeSearch.getQuery = function(){return ""};
+
+  // jQuery implementation of Google Earth search
+  $.fn.geSearch = function(ge, options){
+
+    var geSearch = $(this);
+
+    function searchMap(){new GeSearch;}
+
+    return $(this).each(function(i, element){
+      switch($(element).attr("type")){
+        case "text":
+        case "search":
+          GeSearch.getQuery = function(){return $(element).val();};
+
+          $(element).keypress(function(e){
+            if(e.keyCode == 13) {
+              searchMap();
+              return false;
+            }
+          });
+          break;
+
+        case "button":
+        case "submit":
+        case "image":
+          $(element).click(searchMap);
+          break;
+      }
+    });
   }
 
 })(jQuery);
