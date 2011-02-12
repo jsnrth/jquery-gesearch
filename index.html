@@ -9,6 +9,8 @@
   <h1>Google Earth Search</h1>
   <p>jQuery plugin that enables Google Earth geo-coded searches.</p>
 
+  <input type="search" class="ge-search" placeholder="Search Earth!">
+  <input type="button" class="ge-search" value="Search">
   <div id="gePlugin" style="width:600px; height:450px;"></div>
 
   <script>
@@ -46,5 +48,20 @@
     }
   </script>
   <script src="jquery.gesearch.js"></script>
+
+  <script>
+    function searchMap(){
+      var query = $(".ge-search[type=search]").val();
+      new GeSearch(query);
+    }
+
+    $(".ge-search[type=button]").click(searchMap);
+    $(".ge-search[type=search]").keypress(function(e){
+      if(e.keyCode == 13) {
+        searchMap();
+        return false;
+      }
+    });
+  </script>
 </body>
 </html>
