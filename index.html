@@ -35,13 +35,7 @@
     });
 
     function onInitSuccess(instance) {
-      window.ge = instance;
-      ge.getWindow().setVisibility(true);
-      ge.getNavigationControl().setVisibility(ge.VISIBILITY_AUTO);
-      ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, true);
-      ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, true);
-
-      $(".ge-search").geSearch(ge);
+      $(".ge-search").geSearch({gePlugin:instance});
     }
 
   </script>
