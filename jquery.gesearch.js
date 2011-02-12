@@ -24,7 +24,7 @@
       queryType: "address",
       // Immediately perform a search if the query parameter is given, set to
       // false to disable initial search
-      performSearch: performSearch || true
+      performSearch: (performSearch == null) ? true : Boolean(performSearch)
     };
 
     if(typeof options == "string"){
@@ -40,7 +40,7 @@
     // Search for something
     this.search = function(query){
       if(query){this.options.query = query;}
-      this.geocoder.geocode(this.getRequest(), this.onGeoResults);
+      this.geocoder.geocode(this.getRequest(), GeSearch.onGeoResults);
     }
 
     // Get a request object for geocoding
@@ -50,18 +50,6 @@
       return o;
     }
 
-    // Event handler for geocode request
-    this.onGeoResults = function(results, status){
-      switch(status) {
-        case google.maps.GeocoderStatus.OK:
-          GeSearch.gotoResult(results[0]);
-          break;
-        case google.maps.GeocoderStatus.ZERO_RESULTS:
-          GeSearch.notifyNoResults();
-        break;
-      }
-    }
-
     if(this.options.performSearch && this.options.query){
       this.search();
     }
@@ -69,6 +57,18 @@
 
   // The Google Earth browser instance
   GeSearch.instance = undefined;
+
+  // Event handler for geocode request
+  GeSearch.onGeoResults = function(results, status){
+    switch(status) {
+      case google.maps.GeocoderStatus.OK:
+        GeSearch.gotoResult(results[0]);
+        break;
+      case google.maps.GeocoderStatus.ZERO_RESULTS:
+        GeSearch.notifyZeroResults();
+      break;
+    }
+  }
 
   // Takes a google.maps.GeocoderResult and moves the Earth viewport there
   // Also relevant: google.maps.GeocoderGeometry, KmlCamera, GEView
@@ -96,7 +96,7 @@
   }
 
   // Flash a message to notify users that the geo search produced zero results
-  GeSearch.notifyNoResults = function(){
+  GeSearch.notifyZeroResults = function(){
     var flash = $("<span class='no-results'>Nothing found</span>");
     $("body").prepend(flash);
     flash.delay(3000).fadeOut();
