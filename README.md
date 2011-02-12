@@ -51,12 +51,19 @@ If you do not wish to search immediately you can send in the option `performSear
     var gs = new GeSearch("Boulder, CO", false);
     gs.search();
 
-### `GeSearch.instance`
+To customize behavior simply overwrite the functions of the GeSearch class.
 
-### `GeSearch.getQuery`
+### GeSearch.gePlugin
 
-### `GeSearch.onGeoResults`
+Stores the [GEPlugin](http://code.google.com/apis/earth/documentation/reference/interface_g_e_plugin.html) instance.
 
-### `GeSearch.gotoResult`
+Initializing a jQuery.geSearch will use either the `gePlugin` option, the `GeSearch.gePlugin` class variable, or `window.gePlugin`. An error is thrown if no `GEPlugin` instance if found.
 
-### `GeSearch.notifyZeroResults`
+
+### GeSearch.getQuery
+
+### GeSearch.onGeoResults
+
+### GeSearch.gotoResult
+
+### GeSearch.notifyZeroResults

@@ -12,9 +12,9 @@
 
   GeSearch = function(options, performSearch){
 
-    var ge = GeSearch.instance || window.ge;
+    var ge = GeSearch.gePlugin || window.gePlugin;
 
-    if(!ge){throw "Could not find instance of Google Earth browser plugin";}
+    if(!ge){throw "Could not find the Google Earth plugin.";}
 
     this.geocoder = new google.maps.Geocoder();
 
@@ -56,7 +56,7 @@
   };
 
   // The Google Earth browser instance
-  GeSearch.instance = undefined;
+  GeSearch.gePlugin = undefined;
 
   // Event handler for geocode request
   GeSearch.onGeoResults = function(results, status){
@@ -85,14 +85,14 @@
       var altitude = 10000;
     }
 
-    var camera = GeSearch.instance.getView().copyAsCamera(GeSearch.instance.ALTITUDE_RELATIVE_TO_GROUND);
+    var camera = GeSearch.gePlugin.getView().copyAsCamera(GeSearch.gePlugin.ALTITUDE_RELATIVE_TO_GROUND);
     camera.setLatitude(latitude);
     camera.setLongitude(longitude);
     camera.setAltitude(altitude);
     camera.setHeading(0.0);
     camera.setTilt(0.0);
 
-    GeSearch.instance.getView().setAbstractView(camera);
+    GeSearch.gePlugin.getView().setAbstractView(camera);
   }
 
   // Flash a message to notify users that the geo search produced zero results
@@ -152,7 +152,7 @@
   // jQuery implementation of Google Earth search
   $.fn.geSearch = function(options){
 
-    if(!GeSearch.instance){GeSearch.instance = options.gePlugin;}
+    if(!GeSearch.gePlugin){GeSearch.gePlugin = options.gePlugin;}
 
     function searchMap(){new GeSearch;}
 
