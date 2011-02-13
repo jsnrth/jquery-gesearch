@@ -31,7 +31,13 @@
       gePlugin: null,
 
       // Callback when geocoded results are recieved
-      searchCallback: null
+      onResults: null,
+
+      // Takes a GeocoderResult object and moves the map there
+      gotoResult: null,
+
+      // Flash a message that there are zero results
+      notifyZeroResults: null
     };
 
     // Create an options object out of a string if that is the argument method.
@@ -71,9 +77,9 @@
       // The callback used by the search function. It is scoped to this GeSearch
       // instance. The actual callback function can be overwritten by defining
       // the searchCallback function in the GeSearch options, or by overwriting
-      // the GeSearch.onGeoResults class function.
+      // the GeSearch.onResults class function.
       var callback = function(results, status){
-        var f = gs.options.searchCallback || GeSearch.onGeoResults;
+        var f = gs.options.onResults || GeSearch.onResults;
         f.apply(gs, [results, status]);
       }
 
@@ -97,13 +103,16 @@
   GeSearch.gePlugin = null;
 
   // Event handler for geocode request
-  GeSearch.onGeoResults = function(results, status){
+  GeSearch.onResults = function(results, status){
     switch(status) {
       case google.maps.GeocoderStatus.OK:
-        GeSearch.gotoResult.apply(this, [results[0]]);
+        var f = this.options.gotoResult || GeSearch.gotoResult;
+        f.apply(this, [results[0]]);
         break;
+
       case google.maps.GeocoderStatus.ZERO_RESULTS:
-        GeSearch.notifyZeroResults.apply(this);
+        var f = this.options.notifyZeroResults || GeSearch.notifyZeroResults;
+        f.apply(this);
       break;
     };
   }

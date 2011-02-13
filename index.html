@@ -32,7 +32,7 @@
 
     google.setOnLoadCallback(function(){
       google.earth.createInstance('gePlugin', function(instance){
-        window.ge = instance;
+        window.gePlugin = instance;
         instance.getLayerRoot().enableLayerById(instance.LAYER_BORDERS, true);
         $(".ge-search").geSearch({gePlugin:instance});
       });
