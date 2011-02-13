@@ -190,30 +190,29 @@
     return alt;
   }
 
-  // Function to get the query string for a search
-  GeSearch.getQuery = function(){return ""};
-
   // jQuery implementation of Google Earth search
   $.fn.geSearch = function(options){
+
+    var searchText = $(this).filter("input[type=text], input[type=search]")[0];
+    var getQuery = function(){return searchText.val();};
+
+    if(!searchText){throw "No Google Earth search field found";}
 
     // Loop through all elements and attach search capabilies
     // NOTE: for now only input text, search and button elements are supported
     //  as jQuery widgets. All other elements are skipped and left unscathed.
     return $(this).each(function(i, element){
+
       switch($(element).attr("type")){
 
         case "text":
         case "search":
-          // Consider text|search elements as the search query; overwrite the
-          // function that constructs the query for the GeSearch class
-          // FIXME: this will overwrites _all_ search functionaly on a page by
-          //  clobbering all pre-existing search field stuff.
-          GeSearch.getQuery = function(){return $(element).val();};
 
           // Enable keyboard actions for these elements; if the enter key is
           // pressed then trigger a search
           $(element).keypress(function(e){
             if(e.keyCode == 13) {
+              options.query = getQuery();
               new GeSearch(options);
               return false;
             }
@@ -226,6 +225,7 @@
           // Simply perform a search on the click actions, return false to
           // prevent form submissions.
           $(element).click(function(e){
+            options.query = getQuery();
             new GeSearch(options);
             return false;
           });

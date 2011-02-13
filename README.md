@@ -3,12 +3,20 @@ Google Earth Search jQuery Plugin
 
 This plugin enables geo-coded searches in the Google Earth browser plugin using the google maps v3 geo coding API.
 
+The [Google Earth](http://code.google.com/apis/earth/) and [Google Maps v3](http://code.google.com/apis/maps/documentation/javascript/) APIs must be loaded for this plugin to work.
+
+All HTML elements related to the search (i.e. text input, buttons, etc) should share the same class. Use that class to initialize the jQuery.geSearch plugin. 
+
+The plugin will attempt to discover the text input and the submit buttons automatically. If no search text is found then an error will be thrown. Valid search text fields are `input[type=text]` or `input[type=search]`. If more than one search field exists in the set then only the first will be used.
+
     <input type="search" class="ge-search" placeholder="Search Earth!">
     <input type="button" class="ge-search" value="Search">
+
     <div id="gePlugin" style="width:600px; height:450px;"></div>
 
     <script src="//www.google.com/jsapi?key=your_key_here"></script>
     <script>
+
       google.load("earth", "1");
       google.load("maps", "3", {other_params:"sensor=true"});
 
@@ -19,9 +27,6 @@ This plugin enables geo-coded searches in the Google Earth browser plugin using 
       });
 
     </script>
-
-`$(".ge-search").geSearch({gePlugin: pluginInstance});`
-
 
 Options
 -------
@@ -51,7 +56,13 @@ If you do not wish to search immediately you can send in the option `performSear
     var gs = new GeSearch("Boulder, CO", false);
     gs.search();
 
-To customize behavior simply overwrite the functions of the GeSearch class.
+The GeSearch class takes the same options as the jQuery plugin above. You can also overwrite the functions of the GeSearch class to change the behavior for all instances.
+
+By default all of the class functions are applied to the current GeSearch instance (i.e. within the functions `this` will refer to the current GeSearch instance).
+
+    var options = {query: "Los Angeles", onResults: function(){...}};
+    new GeSearch(options);
+
 
 ### GeSearch.gePlugin
 
@@ -60,10 +71,15 @@ Stores the [GEPlugin](http://code.google.com/apis/earth/documentation/reference/
 Initializing a jQuery.geSearch will use either the `gePlugin` option, the `GeSearch.gePlugin` class variable, or `window.gePlugin`. An error is thrown if no `GEPlugin` instance if found.
 
 
-### GeSearch.getQuery
-
 ### GeSearch.onResults
+
+Handler for the [`google.maps.GeocoderResult`](http://code.google.com/apis/maps/documentation/javascript/reference.html#GeocoderResult) function call.
+
 
 ### GeSearch.gotoResult
 
+Takes a [`google.maps.GeocoderResult`](http://code.google.com/apis/maps/documentation/javascript/reference.html#GeocoderResult) object and causes the map to fly to that location.
+
 ### GeSearch.notifyZeroResults
+
+Flashes a message reading "Nothing found".
