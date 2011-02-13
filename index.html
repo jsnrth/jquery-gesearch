@@ -9,7 +9,7 @@
   <h1>Google Earth Search</h1>
   <p>jQuery plugin that enables Google Earth geo-coded searches.</p>
 
-  <input type="search" class="ge-search" placeholder="Search Earth!">
+  <input type="search" class="ge-search" placeholder="Search Earth!" autofocus>
   <input type="button" class="ge-search" value="Search">
   <div id="gePlugin" style="width:600px; height:450px;"></div>
 
@@ -32,6 +32,7 @@
 
     google.setOnLoadCallback(function(){
       google.earth.createInstance('gePlugin', function(instance){
+        window.ge = instance;
         instance.getLayerRoot().enableLayerById(instance.LAYER_BORDERS, true);
         $(".ge-search").geSearch({gePlugin:instance});
       });

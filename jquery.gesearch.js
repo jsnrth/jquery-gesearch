@@ -12,87 +12,125 @@
 
   GeSearch = function(options, performSearch){
 
-    var ge = GeSearch.gePlugin || window.gePlugin;
+    // This ensures that the Google Maps api v3 is loaded by detecting the
+    // Geocoder class. Check this first because it's a prerequisite.
+    if(!(google.maps && google.maps.Geocoder)){throw "Could not find the Google Maps GeoCoder."}
 
-    if(!ge){throw "Could not find the Google Earth plugin.";}
-
-    this.geocoder = new google.maps.Geocoder();
 
     // Initialize options
     var defaults = {
-      query: (typeof GeSearch.getQuery == "function") ? GeSearch.getQuery() : "",
-      queryType: "address",
+
+      // The query to perform
+      query: (typeof GeSearch.getQuery == "function") ? GeSearch.getQuery.apply(this) : "",
+
       // Immediately perform a search if the query parameter is given, set to
       // false to disable initial search
-      performSearch: (performSearch == null) ? true : Boolean(performSearch)
+      performSearch: true,
+
+      // GEPlugin instance
+      gePlugin: null,
+
+      // Callback when geocoded results are recieved
+      searchCallback: null
     };
 
+    // Create an options object out of a string if that is the argument method.
     if(typeof options == "string"){
-      this.options = $.extend(defaults, {query: options});
-    }
-    else if(typeof options == "object"){
-      this.options = $.extend(defaults, options);
-    }
-    else{
-      this.options = defaults;
+      options = {
+        // The query to geocode
+        query: options,
+
+        // With this method the second argument should be a performSearch boolean.
+        // If it is not specified then treat is as undefined, in which case the
+        // jQuery extend will use defaults.performSearch
+        peformSearch: (performSearch == null) ? undefined : Boolean(performSearch)
+      };
     }
 
-    // Search for something
+    // Set the options instance variable
+    this.options = $.extend(defaults, options);
+
+    // Set the instance plugin. By default all of the callbacks and functions
+    // used by this instance will have access to this variable. If those
+    // functions are overwritten or modified then that may not be true.
+    this.gePlugin = this.options.gePlugin || GeSearch.gePlugin || window.gePlugin;
+
+    // This ensures that the plugin can be found (set above).
+    if(!this.gePlugin.getView){throw "Could not find the Google Earth plugin.";}
+
+    // Search for something.
     this.search = function(query){
+
+      // Store this instance of the GeSearch in a variable for the callback
+      // functions.
+      var gs = this;
+
+      // If the query argument is given then it will overwrite the default
       if(query){this.options.query = query;}
-      this.geocoder.geocode(this.getRequest(), GeSearch.onGeoResults);
+
+      // The callback used by the search function. It is scoped to this GeSearch
+      // instance. The actual callback function can be overwritten by defining
+      // the searchCallback function in the GeSearch options, or by overwriting
+      // the GeSearch.onGeoResults class function.
+      var callback = function(results, status){
+        var f = gs.options.searchCallback || GeSearch.onGeoResults;
+        f.apply(gs, [results, status]);
+      }
+
+      // The request sent to the Geocoder; it conforms to the the v3 spec:
+      // http://code.google.com/apis/maps/documentation/javascript/reference.html#GeocoderRequest
+      var request = {address:this.options.query};
+      var geocoder = new google.maps.Geocoder;
+
+      // Go. Search.
+      geocoder.geocode(request, callback);
     }
 
-    // Get a request object for geocoding
-    this.getRequest = function(){
-      var o = new Object;
-      o[this.options.queryType] = this.options.query;
-      return o;
-    }
 
+    // Perform the search unless told otherwise
     if(this.options.performSearch && this.options.query){
       this.search();
     }
   };
 
   // The Google Earth browser instance
-  GeSearch.gePlugin = undefined;
+  GeSearch.gePlugin = null;
 
   // Event handler for geocode request
   GeSearch.onGeoResults = function(results, status){
     switch(status) {
       case google.maps.GeocoderStatus.OK:
-        GeSearch.gotoResult(results[0]);
+        GeSearch.gotoResult.apply(this, [results[0]]);
         break;
       case google.maps.GeocoderStatus.ZERO_RESULTS:
-        GeSearch.notifyZeroResults();
+        GeSearch.notifyZeroResults.apply(this);
       break;
-    }
+    };
   }
 
   // Takes a google.maps.GeocoderResult and moves the Earth viewport there
   // Also relevant: google.maps.GeocoderGeometry, KmlCamera, GEView
-  GeSearch.gotoResult = function(geoResult){
-    var latitude = geoResult.geometry.location.lat();
-    var longitude = geoResult.geometry.location.lng();
-    if(geoResult.geometry.bounds) {
-      var altitude = GeSearch.getAltitudeFromBounds(geoResult.geometry.bounds);
+  GeSearch.gotoResult = function(geocoderResult){
+    var latitude = geocoderResult.geometry.location.lat();
+    var longitude = geocoderResult.geometry.location.lng();
+    if(geocoderResult.geometry.bounds) {
+      var altitude = GeSearch.getAltitudeFromBounds(geocoderResult.geometry.bounds);
     }
-    else if(geoResult.geometry.location_type == google.maps.GeocoderLocationType.ROOFTOP) {
+    else if(geocoderResult.geometry.location_type == google.maps.GeocoderLocationType.ROOFTOP) {
       var altitude = 250;
     }
     else {
       var altitude = 10000;
     }
 
-    var camera = GeSearch.gePlugin.getView().copyAsCamera(GeSearch.gePlugin.ALTITUDE_RELATIVE_TO_GROUND);
+    var camera = this.gePlugin.getView().copyAsCamera(this.gePlugin.ALTITUDE_RELATIVE_TO_GROUND);
     camera.setLatitude(latitude);
     camera.setLongitude(longitude);
     camera.setAltitude(altitude);
     camera.setHeading(0.0);
     camera.setTilt(0.0);
 
-    GeSearch.gePlugin.getView().setAbstractView(camera);
+    this.gePlugin.getView().setAbstractView(camera);
   }
 
   // Flash a message to notify users that the geo search produced zero results
@@ -136,12 +174,9 @@
     // get the altitude using the chord length
     var alt = dist/(Math.tan(fov * Math.PI / 180.0));
 
-    // NOTE: Sometimes the alt will be a negative number and GE freaks out.
-    // TODO: Find a better way of handling this, the problem is likely with the
-    //  math above.
-    if(alt < 0) {
-      alt = 10000000;
-    }
+    // FIXME: Sometimes the alt will be a negative number and GE freaks out and
+    //  this isn't exactly an elegant fix...
+    if(alt < 0) {alt = 10000000;}
 
     return alt;
   }
@@ -152,19 +187,25 @@
   // jQuery implementation of Google Earth search
   $.fn.geSearch = function(options){
 
-    if(!GeSearch.gePlugin){GeSearch.gePlugin = options.gePlugin;}
-
-    function searchMap(){new GeSearch;}
-
+    // Loop through all elements and attach search capabilies
+    // NOTE: for now only input text, search and button elements are supported
+    //  as jQuery widgets. All other elements are skipped and left unscathed.
     return $(this).each(function(i, element){
       switch($(element).attr("type")){
+
         case "text":
         case "search":
+          // Consider text|search elements as the search query; overwrite the
+          // function that constructs the query for the GeSearch class
+          // FIXME: this will overwrites _all_ search functionaly on a page by
+          //  clobbering all pre-existing search field stuff.
           GeSearch.getQuery = function(){return $(element).val();};
 
+          // Enable keyboard actions for these elements; if the enter key is
+          // pressed then trigger a search
           $(element).keypress(function(e){
             if(e.keyCode == 13) {
-              searchMap();
+              new GeSearch(options);
               return false;
             }
           });
@@ -173,7 +214,12 @@
         case "button":
         case "submit":
         case "image":
-          $(element).click(searchMap);
+          // Simply perform a search on the click actions, return false to
+          // prevent form submissions.
+          $(element).click(function(e){
+            new GeSearch(options);
+            return false;
+          });
           break;
       }
     });
