@@ -193,7 +193,7 @@
   // jQuery implementation of Google Earth search
   $.fn.geSearch = function(options){
 
-    var searchText = $(this).filter("input[type=text], input[type=search]")[0];
+    var searchText = $(this).filter("input[type=text], input[type=search]").first();
     var getQuery = function(){return searchText.val();};
 
     if(!searchText){throw "No Google Earth search field found";}
