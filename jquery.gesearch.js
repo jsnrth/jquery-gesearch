@@ -12,8 +12,11 @@ GeSearch = function(options, performSearch){
 
   // This ensures that the Google Maps api v3 is loaded by detecting the
   // Geocoder class. Check this first because it's a prerequisite.
-  if(!(google.maps && google.maps.Geocoder)){throw "Could not find the Google Maps GeoCoder."}
+  if(!(google.maps && google.maps.Geocoder)){throw "Could not find the Google Maps Geocoder."}
 
+  // Ensure that jQuery is loaded.
+  // TODO: Make the GeSearch class not depend on jQuery
+  if(!(jQuery)){throw "Could not find the jQuery library."}
 
   // Initialize options
   var defaults = {
@@ -60,7 +63,7 @@ GeSearch = function(options, performSearch){
   this.gePlugin = this.options.gePlugin || GeSearch.gePlugin || window.gePlugin;
 
   // This ensures that the plugin can be found (set above).
-  if(!this.gePlugin.getView){throw "Could not find the Google Earth plugin.";}
+  if(!this.gePlugin || !this.gePlugin.getView){throw "Could not find the Google Earth plugin.";}
 
   // Search for something.
   this.search = function(query){
