@@ -4,6 +4,42 @@ describe("GeSearch", function() {
     new GeSearch;
   });
 
+  it("Should make a geocoder call when instantiated with a string", function(){
+    var spy = spyOn(google.maps.Geocoder.prototype, "geocode");
+    new GeSearch("Boulder, CO");
+    expect(google.maps.Geocoder.prototype.geocode).toHaveBeenCalled();
+    expect(spy.mostRecentCall.args[0]).toEqual({address:"Boulder, CO"});
+  });
+
+  it("Should NOT make a geocoder call when instantiated and performSearch is false", function(){
+    var spy = spyOn(google.maps.Geocoder.prototype, "geocode");
+    new GeSearch("Boulder, CO", false);
+    expect(google.maps.Geocoder.prototype.geocode).not.toHaveBeenCalled();
+  });
+
+  it("Should accept geocode the query option", function(){
+    var spy = spyOn(google.maps.Geocoder.prototype, "geocode");
+    new GeSearch({query: "Boulder, CO"});
+    expect(google.maps.Geocoder.prototype.geocode).toHaveBeenCalled();
+    expect(spy.mostRecentCall.args[0]).toEqual({address:"Boulder, CO"});
+  });
+
+  it("Should accept geocode the query and performSearch options", function(){
+    var spy = spyOn(google.maps.Geocoder.prototype, "geocode");
+    new GeSearch({query: "Boulder, CO", performSearch: false});
+    expect(google.maps.Geocoder.prototype.geocode).not.toHaveBeenCalled();
+  });
+
+  it("Should make a geocode search and callback the GeSearch.onResults function", function(){
+    var geocodeFake = function(request, callback){
+      callback.call();
+    }
+
+    var spy = spyOn(google.maps.Geocoder.prototype, "geocode").andCallFake(geocodeFake);
+
+    var gs = new GeSearch("Memphis, TN");
+  });
+
   describe("Without google.earth", function(){
 
     it("Should throw an error if the earth plugin isn't found", function(){

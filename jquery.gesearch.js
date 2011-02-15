@@ -50,7 +50,7 @@ GeSearch = function(options, performSearch){
       // With this method the second argument should be a performSearch boolean.
       // If it is not specified then treat is as undefined, in which case the
       // jQuery extend will use defaults.performSearch
-      peformSearch: (performSearch == null) ? undefined : Boolean(performSearch)
+      performSearch: (performSearch == undefined) ? undefined : Boolean(performSearch)
     };
   }
 
