@@ -110,7 +110,7 @@ GeSearch.onResults = function(results, status){
 
   switch(status) {
     case google.maps.GeocoderStatus.OK:
-      if(typeof results != "array"){throw "Invalid results";}
+      if(!(results instanceof Array)){throw "Invalid results";}
 
       var f = options.gotoResult || GeSearch.gotoResult;
       f.apply(this, [results[0]]);
@@ -122,7 +122,7 @@ GeSearch.onResults = function(results, status){
       break;
 
     default:
-      throw "Bad google.maps.GeocoderStatus: " + status;
+      throw "Bad Geocoder status: " + status;
   };
 }
 

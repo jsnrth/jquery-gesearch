@@ -62,26 +62,30 @@ describe("GeSearch", function() {
     expect(GeSearch.onResults.apply).toHaveBeenCalled();
   });
 
+
   describe("GeSearch.onResults", function(){
+
+    var OK = google.maps.GeocoderStatus.OK;
+    var ZERO_RESULTS = google.maps.GeocoderStatus.ZERO_RESULTS;
 
     it("Should throw an error if status is not OK or ZERO_RESULTS", function(){
       expect(function(){
         GeSearch.onResults(null, null);
-      }).toThrow("Bad google.maps.GeocoderStatus: null");
+      }).toThrow("Bad Geocoder status: null");
 
       expect(function(){
         GeSearch.onResults();
-      }).toThrow("Bad google.maps.GeocoderStatus: undefined");
+      }).toThrow("Bad Geocoder status: undefined");
 
       expect(function(){
         GeSearch.onResults(null, "Not Valid");
-      }).toThrow("Bad google.maps.GeocoderStatus: Not Valid");
+      }).toThrow("Bad Geocoder status: Not Valid");
     });
 
     it("Should call GeSearch.notifyZeroResults.apply if ZERO_RESULTS", function(){
       spyOn(GeSearch.notifyZeroResults, "apply");
 
-      GeSearch.onResults(null, google.maps.GeocoderStatus.ZERO_RESULTS);
+      GeSearch.onResults(null, ZERO_RESULTS);
 
       expect(GeSearch.notifyZeroResults.apply).toHaveBeenCalled();
     });
@@ -95,23 +99,43 @@ describe("GeSearch", function() {
 
       spyOn(obj.options.notifyZeroResults, "apply");
 
-      GeSearch.onResults.apply(obj, [null, google.maps.GeocoderStatus.ZERO_RESULTS]);
+      GeSearch.onResults.apply(obj, [null, ZERO_RESULTS]);
 
       expect(obj.options.notifyZeroResults.apply).toHaveBeenCalled();
     });
 
-    it("Should call throw an error if status is OK but results is not an array", function(){
+    it("Should throw an error if status is OK but results is not an array", function(){
       expect(function(){
-        GeSearch.onResults(null, google.maps.GeocoderStatus.OK);
+        GeSearch.onResults(null, OK);
       }).toThrow("Invalid results");
 
       expect(function(){
-        GeSearch.onResults("Some Result", google.maps.GeocoderStatus.OK);
+        GeSearch.onResults("Some Result", OK);
       }).toThrow("Invalid results");
 
       expect(function(){
-        GeSearch.onResults({}, google.maps.GeocoderStatus.OK);
+        GeSearch.onResults({}, OK);
       }).toThrow("Invalid results");
+    });
+
+    it("Should call GeSearch.gotoResult if the status is OK and there are results", function(){
+      spyOn(GeSearch.gotoResult, "apply");
+      GeSearch.onResults([], OK)
+      expect(GeSearch.gotoResult.apply).toHaveBeenCalled();
+    });
+
+    it("Should call optional gotoResult if the status is OK and there are results", function(){
+      var obj = {
+        options:{
+          gotoResult:function(result){var fake=true;}
+        }
+      };
+
+      spyOn(obj.options.gotoResult, "apply");
+
+      GeSearch.onResults.apply(obj, [[], OK]);
+
+      expect(obj.options.gotoResult.apply).toHaveBeenCalled();
     });
 
   });
