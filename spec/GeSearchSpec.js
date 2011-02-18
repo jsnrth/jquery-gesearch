@@ -143,6 +143,18 @@ describe("GeSearch", function() {
 
   describe("GeSearch.gotoResult", function(){
 
+    // http://code.google.com/apis/maps/documentation/javascript/reference.html#GeocoderResult
+    // http://code.google.com/apis/maps/documentation/javascript/reference.html#GeocoderGeometry
+    // http://code.google.com/apis/maps/documentation/javascript/reference.html#LatLngBounds
+    // google.maps.GeocoderResult for Boulder, CO
+    var boulderColorado = {
+      geometry:{
+        bounds: new google.maps.LatLngBounds(new google.maps.LatLng(39.9640689, -105.17819700000001), new google.maps.LatLng(40.0945509, -105.17819700000001)),
+        location: new google.maps.LatLng(40.0149856, -105.27054559999999),
+        location_type: google.maps.GeocoderLocationType.APPROXIMATE
+      }
+    };
+
     it("Should throw an error if the gePlugin isn't found", function(){
       var ge = window.gePlugin;
       window.gePlugin = undefined;
@@ -173,6 +185,10 @@ describe("GeSearch", function() {
       expect(function(){
         GeSearch.gotoResult({});
       }).toThrow("Cannot read property 'bounds' of undefined");
+    });
+
+    it("Should copy the camera, set the lat, lng and altitude and apply it to the plugin", function(){
+      // pending
     });
 
   });
