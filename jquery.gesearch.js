@@ -110,6 +110,8 @@ GeSearch.onResults = function(results, status){
 
   switch(status) {
     case google.maps.GeocoderStatus.OK:
+      if(typeof results != "array"){throw "Invalid results";}
+
       var f = options.gotoResult || GeSearch.gotoResult;
       f.apply(this, [results[0]]);
       break;

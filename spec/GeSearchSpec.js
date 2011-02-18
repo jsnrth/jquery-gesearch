@@ -99,6 +99,21 @@ describe("GeSearch", function() {
 
       expect(obj.options.notifyZeroResults.apply).toHaveBeenCalled();
     });
+
+    it("Should call throw an error if status is OK but results is not an array", function(){
+      expect(function(){
+        GeSearch.onResults(null, google.maps.GeocoderStatus.OK);
+      }).toThrow("Invalid results");
+
+      expect(function(){
+        GeSearch.onResults("Some Result", google.maps.GeocoderStatus.OK);
+      }).toThrow("Invalid results");
+
+      expect(function(){
+        GeSearch.onResults({}, google.maps.GeocoderStatus.OK);
+      }).toThrow("Invalid results");
+    });
+
   });
 
 
