@@ -143,22 +143,36 @@ describe("GeSearch", function() {
 
   describe("GeSearch.gotoResult", function(){
 
-    it("Should throw an error if the geocoder result is not valid", function(){
+    it("Should throw an error if the gePlugin isn't found", function(){
+      var ge = window.gePlugin;
+      window.gePlugin = undefined;
+      GeSearch.gePlugin = undefined;
+
+      expect(function(){
+        GeSearch.gotoResult({geometry:{bounds:true}});
+      }).toThrow("Could not find the Google Earth plugin.");
+
+      window.gePlugin = ge;
+    });
+
+    it("Should throw an error if the geocoder result has no geometry", function(){
       expect(function(){
         GeSearch.gotoResult();
-      }).toThrow("Invalid Geocoder Result");
+      }).toThrow("Cannot read property 'geometry' of undefined");
 
       expect(function(){
         GeSearch.gotoResult(null);
-      }).toThrow("Invalid Geocoder Result");
+      }).toThrow("Cannot read property 'geometry' of null");
+    });
 
+    it("Should throw an error if the geocoder result's geometry has no bounds", function(){
       expect(function(){
         GeSearch.gotoResult("Here");
-      }).toThrow("Invalid Geocoder Result");
+      }).toThrow("Cannot read property 'bounds' of undefined");
 
       expect(function(){
         GeSearch.gotoResult({});
-      }).toThrow("Invalid Geocoder Result");
+      }).toThrow("Cannot read property 'bounds' of undefined");
     });
 
   });

@@ -128,13 +128,10 @@ GeSearch.onResults = function(results, status){
 
 // Takes a google.maps.GeocoderResult and moves the Earth viewport there
 // Also relevant: google.maps.GeocoderGeometry, KmlCamera, GEView
-GeSearch.gotoResult = function(geocoderResult){
-  if(!(geocoderResult && geocoderResult.geometry && geocoderResult.geometry.location && geocoderResult.geometry.location.lat && geocoderResult.geometry.location.lng)){
-    throw "Invalid Geocoder Result";
-  }
-
-  var latitude = geocoderResult.geometry.location.lat();
-  var longitude = geocoderResult.geometry.location.lng();
+GeSearch.gotoResult = function(geocoderResult, gePlugin){
+  // Get the plugin
+  var gePlugin = gePlugin || this.gePlugin || GeSearch.gePlugin || window.gePlugin;
+  if(!gePlugin || !gePlugin.getView){throw "Could not find the Google Earth plugin.";}
 
   if(geocoderResult.geometry.bounds) {
     var altitude = GeSearch.getAltitudeFromBounds(geocoderResult.geometry.bounds);
@@ -146,14 +143,14 @@ GeSearch.gotoResult = function(geocoderResult){
     var altitude = 10000;
   }
 
-  var camera = this.gePlugin.getView().copyAsCamera(this.gePlugin.ALTITUDE_RELATIVE_TO_GROUND);
-  camera.setLatitude(latitude);
-  camera.setLongitude(longitude);
+  var camera = gePlugin.getView().copyAsCamera(gePlugin.ALTITUDE_RELATIVE_TO_GROUND);
+  camera.setLatitude(geocoderResult.geometry.location.lat());
+  camera.setLongitude(geocoderResult.geometry.location.lng());
   camera.setAltitude(altitude);
   camera.setHeading(0.0);
   camera.setTilt(0.0);
 
-  this.gePlugin.getView().setAbstractView(camera);
+  gePlugin.getView().setAbstractView(camera);
 }
 
 // Flash a message to notify users that the geo search produced zero results
