@@ -129,8 +129,13 @@ GeSearch.onResults = function(results, status){
 // Takes a google.maps.GeocoderResult and moves the Earth viewport there
 // Also relevant: google.maps.GeocoderGeometry, KmlCamera, GEView
 GeSearch.gotoResult = function(geocoderResult){
+  if(!(geocoderResult && geocoderResult.geometry && geocoderResult.geometry.location && geocoderResult.geometry.location.lat && geocoderResult.geometry.location.lng)){
+    throw "Invalid Geocoder Result";
+  }
+
   var latitude = geocoderResult.geometry.location.lat();
   var longitude = geocoderResult.geometry.location.lng();
+
   if(geocoderResult.geometry.bounds) {
     var altitude = GeSearch.getAltitudeFromBounds(geocoderResult.geometry.bounds);
   }

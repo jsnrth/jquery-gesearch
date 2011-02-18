@@ -141,6 +141,29 @@ describe("GeSearch", function() {
   });
 
 
+  describe("GeSearch.gotoResult", function(){
+
+    it("Should throw an error if the geocoder result is not valid", function(){
+      expect(function(){
+        GeSearch.gotoResult();
+      }).toThrow("Invalid Geocoder Result");
+
+      expect(function(){
+        GeSearch.gotoResult(null);
+      }).toThrow("Invalid Geocoder Result");
+
+      expect(function(){
+        GeSearch.gotoResult("Here");
+      }).toThrow("Invalid Geocoder Result");
+
+      expect(function(){
+        GeSearch.gotoResult({});
+      }).toThrow("Invalid Geocoder Result");
+    });
+
+  });
+
+
   describe("Without google.earth", function(){
 
     it("Should throw an error if the earth plugin isn't found", function(){
