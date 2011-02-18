@@ -105,14 +105,17 @@ GeSearch.gePlugin = null;
 
 // Event handler for geocode request
 GeSearch.onResults = function(results, status){
+  // Ensure that there is an options object
+  var options = this.options || {};
+
   switch(status) {
     case google.maps.GeocoderStatus.OK:
-      var f = this.options.gotoResult || GeSearch.gotoResult;
+      var f = options.gotoResult || GeSearch.gotoResult;
       f.apply(this, [results[0]]);
       break;
 
     case google.maps.GeocoderStatus.ZERO_RESULTS:
-      var f = this.options.notifyZeroResults || GeSearch.notifyZeroResults;
+      var f = options.notifyZeroResults || GeSearch.notifyZeroResults;
       f.apply(this);
       break;
 
