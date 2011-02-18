@@ -114,7 +114,10 @@ GeSearch.onResults = function(results, status){
     case google.maps.GeocoderStatus.ZERO_RESULTS:
       var f = this.options.notifyZeroResults || GeSearch.notifyZeroResults;
       f.apply(this);
-    break;
+      break;
+
+    default:
+      throw "Bad google.maps.GeocoderStatus: " + status;
   };
 }
 

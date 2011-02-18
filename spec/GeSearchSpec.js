@@ -62,6 +62,25 @@ describe("GeSearch", function() {
     expect(GeSearch.onResults.apply).toHaveBeenCalled();
   });
 
+  describe("GeSearch.onResults", function(){
+
+    it("Should throw an error if status is not OK or ZERO_RESULTS", function(){
+      expect(function(){
+        GeSearch.onResults(null, null);
+      }).toThrow("Bad google.maps.GeocoderStatus: null");
+
+      expect(function(){
+        GeSearch.onResults();
+      }).toThrow("Bad google.maps.GeocoderStatus: undefined");
+
+      expect(function(){
+        GeSearch.onResults(null, "Not Valid");
+      }).toThrow("Bad google.maps.GeocoderStatus: Not Valid");
+    });
+
+  });
+
+
   describe("Without google.earth", function(){
 
     it("Should throw an error if the earth plugin isn't found", function(){
