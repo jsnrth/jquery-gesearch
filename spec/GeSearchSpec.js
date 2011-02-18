@@ -30,14 +30,36 @@ describe("GeSearch", function() {
     expect(google.maps.Geocoder.prototype.geocode).not.toHaveBeenCalled();
   });
 
-  it("Should make a geocode search and callback the GeSearch.onResults function", function(){
+  it("Should search and call GeSearch.onResults.apply with the results", function(){
+
     var geocodeFake = function(request, callback){
       callback.call();
     }
 
-    var spy = spyOn(google.maps.Geocoder.prototype, "geocode").andCallFake(geocodeFake);
+    var spy1 = spyOn(google.maps.Geocoder.prototype, "geocode").andCallFake(geocodeFake);
+    var spy2 = spyOn(GeSearch.onResults, "apply");
 
     var gs = new GeSearch("Memphis, TN");
+
+    expect(google.maps.Geocoder.prototype.geocode).toHaveBeenCalled();
+    // TODO: figure out how to check for the correct arguments
+    expect(GeSearch.onResults.apply).toHaveBeenCalled();
+  });
+
+  it("Should search and call optional onResults.apply with the results", function(){
+
+    var geocodeFake = function(request, callback){
+      callback.call();
+    }
+
+    spyOn(google.maps.Geocoder.prototype, "geocode").andCallFake(geocodeFake);
+    spyOn(GeSearch.onResults, "apply");
+
+    var gs = new GeSearch("Memphis, TN");
+
+    expect(google.maps.Geocoder.prototype.geocode).toHaveBeenCalled();
+    // TODO: figure out how to check for the correct arguments
+    expect(GeSearch.onResults.apply).toHaveBeenCalled();
   });
 
   describe("Without google.earth", function(){
