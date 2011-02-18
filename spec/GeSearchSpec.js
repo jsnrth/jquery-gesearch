@@ -78,6 +78,27 @@ describe("GeSearch", function() {
       }).toThrow("Bad google.maps.GeocoderStatus: Not Valid");
     });
 
+    it("Should call GeSearch.notifyZeroResults.apply if ZERO_RESULTS", function(){
+      spyOn(GeSearch.notifyZeroResults, "apply");
+
+      GeSearch.onResults(null, google.maps.GeocoderStatus.ZERO_RESULTS);
+
+      expect(GeSearch.notifyZeroResults.apply).toHaveBeenCalled();
+    });
+
+    it("Should call optional notifyZeroResults.apply if ZERO_RESULTS", function(){
+      var obj = {
+        options:{
+          notifyZeroResults:function(){var fake=true;}
+        }
+      };
+
+      spyOn(obj.options.notifyZeroResults, "apply");
+
+      GeSearch.onResults.apply(obj, [null, google.maps.GeocoderStatus.ZERO_RESULTS]);
+
+      expect(obj.options.notifyZeroResults.apply).toHaveBeenCalled();
+    });
   });
 
 
