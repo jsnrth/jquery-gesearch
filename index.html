@@ -4,15 +4,6 @@
   <meta charset="utf-8">
   <title>Google Earth Search</title>
 
-</head>
-<body>
-  <h1>Google Earth Search</h1>
-  <p>jQuery plugin that enables Google Earth geo-coded searches.</p>
-
-  <input type="search" class="ge-search" placeholder="Search Earth!" autofocus>
-  <input type="button" class="ge-search" value="Search">
-  <div id="gePlugin" style="width:600px; height:450px;"></div>
-
   <script>
     // Discover and use the appropriate jsapi key
     switch(window.location.host){
@@ -22,13 +13,12 @@
     }
     document.write(unescape('%3Cscript src="http://www.google.com/jsapi?key='+ jsapiKey +'"%3E%3C/script%3E'));
   </script>
+  <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+
   <script>
-    // Google Earth API
+    // Load google Earth API
     google.load("earth", "1");
-    // Google Maps API (necessary for geo-coding)
-    google.load("maps", "3", {other_params:"sensor=true"});
-    // Google Jquery CDN
-    google.load("jquery", "1.4.4");
 
     google.setOnLoadCallback(function(){
       google.earth.createInstance('gePlugin', function(instance){
@@ -40,5 +30,15 @@
 
   </script>
   <script src="jquery.gesearch.js"></script>
+
+</head>
+<body>
+  <h1>Google Earth Search</h1>
+  <p>jQuery plugin that enables Google Earth geo-coded searches.</p>
+
+  <input type="search" class="ge-search" placeholder="Search Earth!" autofocus>
+  <input type="button" class="ge-search" value="Search">
+  <div id="gePlugin" style="width:600px; height:450px;"></div>
+
 </body>
 </html>

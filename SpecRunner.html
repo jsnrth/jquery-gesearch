@@ -3,47 +3,17 @@
 <html>
 <head>
   <title>Jasmine Test Runner</title>
-  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.0.1/jasmine.css">
-  <script type="text/javascript" src="lib/jasmine-1.0.1/jasmine.js"></script>
-  <script type="text/javascript" src="lib/jasmine-1.0.1/jasmine-html.js"></script>
-
-  <!-- include source files here... 
-  <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
-  -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-  <script src="http://www.google.com/jsapi?key=ABQIAAAA6_3K-gCiIwLdvd1uci68ABQnZhpGFBlSBp4V-vX1TF0eV4YGpBR_9WBqiFC7qI99udoIXLs1r_cU4w"></script>
-  <script>
-    google.load("earth", "1");
-    google.load("maps", "3", {other_params:"sensor=true"});
-    // google.load("jquery", "1.4.4");
-  </script>
-
-  <script type="text/javascript" src="jquery.gesearch.js"></script>
-
-  <!-- include spec files here... -->
-  <script type="text/javascript" src="spec/SpecHelper.js"></script>
-  <script type="text/javascript" src="spec/GeSearchSpec.js"></script>
-
+  <style type="text/css">
+    iframe {width: 100%; border: none; height: 300px;}
+  </style>
 </head>
 <body>
 
-<script type="text/javascript">
-  google.setOnLoadCallback(function(){
-    google.earth.createInstance('gePlugin', initCallback, failCallback);
-  });
+  <iframe src="SpecRunner_jquery150.html"></iframe>
 
-  function initCallback(instance){
-    window.gePlugin = instance;
-    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-    jasmine.getEnv().execute();
-  }
+  <iframe src="SpecRunner_jquery144.html"></iframe>
 
-  function failCallback(e){
-    console.log("error", e);
-  }
-</script>
-
-<div id="gePlugin" style="width: 100px; height: 100px;"></div>
+  <iframe src="SpecRunner_jquery132.html"></iframe>
 
 </body>
 </html>
